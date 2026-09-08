@@ -5,3 +5,6 @@ out/
 *.log
 server/data/
 .oakwoodatm/
+
+boot.err
+boot.log
