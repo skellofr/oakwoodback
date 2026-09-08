@@ -15,6 +15,26 @@ function readConfig() {
   return JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
 }
 
+// Removes the unpacked folder that Windows Defender sometimes locks between builds.
+function cleanUnpacked() {
+  try {
+    fs.rmSync(path.join(LAUNCHER_DIR, "dist", "win-unpacked"), { recursive: true, force: true });
+  } catch {
+    // best effort
+  }
+}
+
+function buildInstaller() {
+  cleanUnpacked();
+  try {
+    execSync("npm run dist", { cwd: LAUNCHER_DIR, stdio: "inherit" });
+  } catch {
+    console.log("\n⚠️  Build interrompu (verrou Windows probable). Nouvelle tentative...\n");
+    cleanUnpacked();
+    execSync("npm run dist", { cwd: LAUNCHER_DIR, stdio: "inherit" });
+  }
+}
+
 async function main() {
   const cfg = readConfig();
   const pkg = JSON.parse(fs.readFileSync(PKG_PATH, "utf8"));
@@ -25,9 +45,9 @@ async function main() {
   fs.writeFileSync(PKG_PATH, JSON.stringify(pkg, null, 2) + "\n");
   console.log(`\n➡️  Nouvelle version : ${pkg.version}\n`);
 
-  // 2) Build the installer.
+  // 2) Build the installer (retry once: Windows Defender may transiently lock dist).
   console.log("🔨 Construction de l'installeur (peut prendre 1-2 min)...\n");
-  execSync("npm run dist", { cwd: LAUNCHER_DIR, stdio: "inherit" });
+  buildInstaller();
 
   // 3) Upload the update artifacts to the server.
   const distDir = path.join(LAUNCHER_DIR, "dist");
