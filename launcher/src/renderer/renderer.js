@@ -6,6 +6,12 @@ const progressFill = document.getElementById("progress-fill");
 
 window.oakwood.getAppInfo().then((info) => {
   appInfoEl.textContent = info.instanceDir;
+  const versionEl = document.getElementById("brand-version");
+  if (versionEl && info.version) versionEl.textContent = `v${info.version}`;
+});
+
+window.oakwood.onUpdateStatus((text) => {
+  statusEl.textContent = text;
 });
 
 window.oakwood.onGameProgress(({ status, percent }) => {

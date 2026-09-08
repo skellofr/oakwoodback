@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld("oakwood", {
 
   play: () => ipcRenderer.invoke("play"),
   onGameProgress: (callback) => ipcRenderer.on("game:progress", (event, data) => callback(data)),
+  onUpdateStatus: (callback) => ipcRenderer.on("update:status", (event, text) => callback(text)),
 });

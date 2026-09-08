@@ -15,6 +15,8 @@ const { SERVER_BASE_URL } = require("./config");
 const APP_DATA_DIR = path.join(os.homedir(), APP_FOLDER_NAME);
 const INSTANCE_DIR = path.join(APP_DATA_DIR, "instance");
 
+let mainWindow = null;
+
 function ensureAppDirs() {
   fs.mkdirSync(APP_DATA_DIR, { recursive: true });
   fs.mkdirSync(INSTANCE_DIR, { recursive: true });
@@ -33,11 +35,13 @@ function createWindow() {
     },
   });
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
+  mainWindow = win;
   return win;
 }
 
 ipcMain.handle("get-app-info", () => ({
   appDataDir: APP_DATA_DIR,
+  version: app.getVersion(),
   instanceDir: INSTANCE_DIR,
 }));
 
@@ -146,6 +150,11 @@ app.whenReady().then(() => {
 // Checks the self-hosted update feed on startup (packaged builds only).
 function setupAutoUpdate() {
   if (!app.isPackaged) return;
+  const notify = (text) => mainWindow && mainWindow.webContents.send("update:status", text);
+  autoUpdater.on("update-available", () => notify("Mise à jour disponible, téléchargement..."));
+  autoUpdater.on("download-progress", (p) => notify(`Téléchargement de la mise à jour : ${Math.round(p.percent)}%`));
+  autoUpdater.on("update-downloaded", () => notify("Mise à jour prête ! Redémarre le launcher pour l'appliquer."));
+  autoUpdater.on("error", (err) => console.error("Auto-update:", err.message));
   try {
     autoUpdater.setFeedURL({ provider: "generic", url: `${SERVER_BASE_URL}/updates` });
     autoUpdater.checkForUpdatesAndNotify();

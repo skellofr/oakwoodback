@@ -94,6 +94,12 @@ body {
   margin-top: 3px;
 }
 
+.brand-version {
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #7d7690;
+}
+
 .topbar-right {
   display: flex;
   align-items: center;
