@@ -1,30 +1,35 @@
-const { db } = require("./db/database");
-
-const selectByDiscordId = db.prepare("SELECT * FROM admins WHERE discord_id = ?");
-const insertAdmin = db.prepare(
-  "INSERT INTO admins (discord_id, username, avatar, created_at, last_login) VALUES (?, ?, ?, ?, ?)"
-);
-const updateOnLogin = db.prepare("UPDATE admins SET username = ?, avatar = ?, last_login = ? WHERE id = ?");
-const countAdmins = db.prepare("SELECT COUNT(*) AS n FROM admins");
+const { data, save } = require("./db/database");
 
 function getByDiscordId(discordId) {
-  return selectByDiscordId.get(discordId);
+  return data.admins.find((a) => a.discord_id === discordId) || null;
 }
 
 // Creates the admin on first login, otherwise refreshes profile + last_login.
 function upsertOnLogin({ id, username, avatar }) {
-  const existing = selectByDiscordId.get(id);
   const now = Date.now();
+  const existing = data.admins.find((a) => a.discord_id === id);
   if (existing) {
-    updateOnLogin.run(username, avatar, now, existing.id);
+    existing.username = username;
+    existing.avatar = avatar;
+    existing.last_login = now;
+    save();
     return existing.id;
   }
-  const info = insertAdmin.run(id, username, avatar, now, now);
-  return info.lastInsertRowid;
+  const admin = {
+    id: data.nextAdminId++,
+    discord_id: id,
+    username,
+    avatar,
+    created_at: now,
+    last_login: now,
+  };
+  data.admins.push(admin);
+  save();
+  return admin.id;
 }
 
 function adminCount() {
-  return countAdmins.get().n;
+  return data.admins.length;
 }
 
 module.exports = { getByDiscordId, upsertOnLogin, adminCount };

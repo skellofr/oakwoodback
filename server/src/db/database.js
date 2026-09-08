@@ -1,36 +1,26 @@
 const path = require("path");
 const fs = require("fs");
-const Database = require("better-sqlite3");
 
 const DATA_DIR = path.join(__dirname, "..", "..", "data");
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
-const db = new Database(path.join(DATA_DIR, "oakwood.db"));
-db.pragma("journal_mode = WAL");
-db.pragma("foreign_keys = ON");
+const DB_PATH = path.join(DATA_DIR, "oakwood-db.json");
 
-// Schema is created idempotently on every boot.
-db.exec(`
-  CREATE TABLE IF NOT EXISTS admins (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    discord_id  TEXT UNIQUE NOT NULL,
-    username    TEXT NOT NULL,
-    avatar      TEXT,
-    created_at  INTEGER NOT NULL,
-    last_login  INTEGER
-  );
+// Tiny JSON-backed store — zero native dependencies, safe on any host.
+const data = { admins: [], sessions: {}, config: {}, nextAdminId: 1 };
+if (fs.existsSync(DB_PATH)) {
+  try {
+    Object.assign(data, JSON.parse(fs.readFileSync(DB_PATH, "utf8")));
+  } catch {
+    // corrupt file: start fresh
+  }
+}
 
-  CREATE TABLE IF NOT EXISTS sessions (
-    token      TEXT PRIMARY KEY,
-    admin_id   INTEGER NOT NULL REFERENCES admins(id) ON DELETE CASCADE,
-    created_at INTEGER NOT NULL,
-    expires_at INTEGER NOT NULL
-  );
+// Atomic write (temp + rename) so a reader never sees a half-written file.
+function save() {
+  const tmp = `${DB_PATH}.tmp`;
+  fs.writeFileSync(tmp, JSON.stringify(data, null, 2));
+  fs.renameSync(tmp, DB_PATH);
+}
 
-  CREATE TABLE IF NOT EXISTS config (
-    key   TEXT PRIMARY KEY,
-    value TEXT
-  );
-`);
-
-module.exports = { db, DATA_DIR };
+module.exports = { data, save, DATA_DIR };
