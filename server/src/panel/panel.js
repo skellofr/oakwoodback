@@ -37,6 +37,7 @@ function showDashboard(admin) {
   wireNav();
   loadOverview();
   setupMods();
+  setupReleases();
 }
 
 function wireNav() {
@@ -185,6 +186,102 @@ async function deleteMod(path, name) {
     renderMods(document.getElementById("mods-search").value);
     loadOverview();
   }
+}
+
+// --- Launcher releases ---
+function setupReleases() {
+  const dropzone = document.getElementById("rel-dropzone");
+  const input = document.getElementById("rel-input");
+
+  dropzone.addEventListener("click", () => input.click());
+  input.addEventListener("change", () => {
+    if (input.files.length) uploadReleases(input.files);
+    input.value = "";
+  });
+  ["dragenter", "dragover"].forEach((ev) =>
+    dropzone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dropzone.classList.add("dragover");
+    })
+  );
+  ["dragleave", "drop"].forEach((ev) =>
+    dropzone.addEventListener(ev, (e) => {
+      e.preventDefault();
+      dropzone.classList.remove("dragover");
+    })
+  );
+  dropzone.addEventListener("drop", (e) => {
+    if (e.dataTransfer.files.length) uploadReleases(e.dataTransfer.files);
+  });
+
+  loadReleases();
+}
+
+async function loadReleases() {
+  try {
+    const data = await (await fetch("/api/releases", { credentials: "same-origin" })).json();
+    renderReleases(data);
+  } catch {
+    // ignore
+  }
+}
+
+function renderReleases(data) {
+  const cur = document.getElementById("release-current");
+  cur.innerHTML = data.current?.version
+    ? `Version publiée : <strong>${data.current.version}</strong>${data.current.file ? ` — ${data.current.file}` : ""}`
+    : "Aucune version publiée pour le moment.";
+
+  const list = document.getElementById("rel-files");
+  const files = data.files || [];
+  if (files.length === 0) {
+    list.innerHTML = `<div class="mods-empty">Aucun fichier d'update.</div>`;
+    return;
+  }
+  list.innerHTML = "";
+  for (const f of files.sort((a, b) => a.name.localeCompare(b.name))) {
+    const row = document.createElement("div");
+    row.className = "mod-row";
+    row.innerHTML = `
+      <span class="mod-icon">📦</span>
+      <span class="mod-name" title="${f.name}">${f.name}</span>
+      <span class="mod-size">${formatSize(f.size)}</span>
+      <button class="mod-delete">Supprimer</button>`;
+    row.querySelector(".mod-delete").addEventListener("click", () => deleteRelease(f.name));
+    list.appendChild(row);
+  }
+}
+
+async function uploadReleases(fileList) {
+  const status = document.getElementById("rel-status");
+  const form = new FormData();
+  for (const file of fileList) form.append("files", file);
+
+  status.textContent = `Envoi de ${fileList.length} fichier(s)...`;
+  try {
+    const res = await fetch("/api/releases/upload", { method: "POST", body: form, credentials: "same-origin" });
+    const data = await res.json();
+    if (res.ok) {
+      status.textContent = `✅ ${data.saved.length} fichier(s) publié(s).`;
+      renderReleases(data);
+    } else {
+      status.textContent = `❌ Erreur : ${data.error}`;
+    }
+  } catch (err) {
+    status.textContent = `❌ Erreur : ${err.message}`;
+  }
+}
+
+async function deleteRelease(name) {
+  if (!confirm(`Supprimer "${name}" ?`)) return;
+  const res = await fetch("/api/releases/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ name }),
+  });
+  const data = await res.json();
+  if (res.ok) renderReleases(data);
 }
 
 init();

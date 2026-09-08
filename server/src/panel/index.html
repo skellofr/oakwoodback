@@ -70,7 +70,23 @@
           <div class="mods-list" id="mods-list"></div>
         </section>
 
-        <section class="panel-section hidden" data-section="releases"><h1>Launcher</h1><p class="hint">Publication des versions du launcher — à construire.</p></section>
+        <section class="panel-section hidden" data-section="releases">
+          <h1>Launcher</h1>
+          <div class="release-current" id="release-current">Chargement...</div>
+          <div class="dropzone" id="rel-dropzone">
+            <input type="file" id="rel-input" multiple hidden />
+            <span class="dropzone-icon">⬆</span>
+            <span class="dropzone-text">Glisse les fichiers de <strong>launcher/dist/</strong> (latest.yml, .exe, .blockmap)</span>
+          </div>
+          <div class="upload-status" id="rel-status"></div>
+          <div class="mods-list" id="rel-files"></div>
+          <p class="hint">
+            Pour publier une version : bump <code>version</code> dans <code>launcher/package.json</code>,
+            lance <code>npm run dist</code>, puis dépose ici <code>latest.yml</code>, le <code>.exe</code>
+            et le <code>.exe.blockmap</code> générés. Les launchers installés se mettront à jour au démarrage.
+          </p>
+        </section>
+
         <section class="panel-section hidden" data-section="news"><h1>Actualités</h1><p class="hint">Annonces & changelog — à construire.</p></section>
         <section class="panel-section hidden" data-section="config"><h1>Config</h1><p class="hint">Versions MC / NeoForge, RAM conseillée — à construire.</p></section>
       </main>

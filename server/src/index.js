@@ -9,6 +9,7 @@ const { getFeed } = require("./feedStore");
 const { router: adminRouter, FILES_DIR } = require("./routes/admin");
 const authRouter = require("./routes/auth");
 const modsRouter = require("./routes/mods");
+const releasesRouter = require("./routes/releases");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -39,6 +40,7 @@ app.use("/updates", express.static(path.join(DATA_DIR, "updates")));
 // Admin API + web panel.
 app.use("/api/auth", authRouter);
 app.use("/api/mods", modsRouter);
+app.use("/api/releases", releasesRouter);
 app.use("/admin", adminRouter);
 app.use("/panel", express.static(path.join(__dirname, "panel")));
 app.get("/", (req, res) => res.redirect("/panel"));

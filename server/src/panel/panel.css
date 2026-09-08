@@ -336,3 +336,23 @@ body {
   padding: 20px;
   text-align: center;
 }
+
+/* --- Releases --- */
+.release-current {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+.release-current strong {
+  color: var(--accent-2);
+}
+.hint code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 13px;
+}
