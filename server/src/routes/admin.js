@@ -8,10 +8,24 @@ const { DATA_DIR, loadManifest, saveManifest, upsertFile, removeFile } = require
 const { appendChangelogEntry, appendAnnouncement } = require("../feedStore");
 
 const FILES_DIR = path.join(DATA_DIR, "files");
+const UPDATES_DIR = path.join(DATA_DIR, "updates");
 const upload = multer({ dest: path.join(DATA_DIR, "tmp-uploads") });
 
 const router = express.Router();
 router.use(requireUploadToken);
+
+// Token-protected launcher release upload (used by the one-click Publier.bat).
+router.post("/release", upload.array("files"), (req, res) => {
+  if (!req.files || req.files.length === 0) return res.status(400).json({ error: "no files" });
+  fs.mkdirSync(UPDATES_DIR, { recursive: true });
+  const saved = [];
+  for (const file of req.files) {
+    const name = path.basename(file.originalname);
+    fs.renameSync(file.path, path.join(UPDATES_DIR, name));
+    saved.push(name);
+  }
+  res.json({ ok: true, saved });
+});
 
 // Rejects absolute paths and ".." segments so an upload can't write outside FILES_DIR.
 function resolveSafePath(relPath) {
