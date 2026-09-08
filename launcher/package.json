@@ -1,6 +1,6 @@
 {
   "name": "@oakwood/launcher",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "Launcher Oakwood ATM10",
   "author": "Oakwood",
@@ -22,7 +22,8 @@
       "node_modules/**/*"
     ],
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "build/icon.png"
     },
     "nsis": {
       "oneClick": false,
