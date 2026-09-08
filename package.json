@@ -1,0 +1,15 @@
+{
+  "name": "oakwood-launcher-monorepo",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "launcher",
+    "admin-tool",
+    "server"
+  ],
+  "scripts": {
+    "launcher": "npm run start --workspace launcher",
+    "admin-tool": "npm run start --workspace admin-tool",
+    "server": "npm run start --workspace server"
+  }
+}

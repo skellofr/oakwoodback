@@ -1,0 +1,9 @@
+module.exports = {
+  MODPACK_NAME: "Oakwood ATM10",
+  MINECRAFT_VERSION: "1.21.1",
+  NEOFORGE_VERSION: "21.1.249",
+  JAVA_MAJOR_VERSION: 21,
+  APP_FOLDER_NAME: ".oakwoodatm",
+  SERVER_HOST: "199.115.72.18",
+  SERVER_PORT: 9045,
+};

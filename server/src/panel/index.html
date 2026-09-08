@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oakwood — Panel Admin</title>
+    <link rel="stylesheet" href="panel.css" />
+  </head>
+  <body>
+    <!-- Login view -->
+    <section id="login-view" class="login-view hidden">
+      <div class="login-card">
+        <div class="brand">
+          <span class="brand-name">OAKWOOD</span>
+          <span class="brand-sub">PANEL ADMIN</span>
+        </div>
+        <p class="login-text">Connecte-toi pour gérer le launcher, les mods et les actualités.</p>
+        <a class="discord-btn" href="/api/auth/discord">
+          <span class="discord-icon"></span>
+          Se connecter avec Discord
+        </a>
+        <p class="login-error" id="login-error"></p>
+      </div>
+    </section>
+
+    <!-- Dashboard view -->
+    <section id="dash-view" class="dash-view hidden">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-name">OAKWOOD</span>
+          <span class="brand-sub">PANEL</span>
+        </div>
+        <nav class="nav">
+          <button class="nav-item active" data-section="overview">Vue d'ensemble</button>
+          <button class="nav-item" data-section="mods">Mods</button>
+          <button class="nav-item" data-section="releases">Launcher</button>
+          <button class="nav-item" data-section="news">Actualités</button>
+          <button class="nav-item" data-section="config">Config</button>
+        </nav>
+        <div class="admin-box">
+          <img id="admin-avatar" class="admin-avatar" alt="" />
+          <span id="admin-name" class="admin-name"></span>
+          <button id="logout-btn" class="logout-btn" title="Déconnexion">⏻</button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <section class="panel-section" data-section="overview">
+          <h1>Vue d'ensemble</h1>
+          <div class="cards">
+            <div class="stat-card"><span class="stat-label">Mods</span><span class="stat-value" id="stat-mods">—</span></div>
+            <div class="stat-card"><span class="stat-label">Version modpack</span><span class="stat-value" id="stat-version">—</span></div>
+            <div class="stat-card"><span class="stat-label">MC / NeoForge</span><span class="stat-value" id="stat-mc">—</span></div>
+          </div>
+          <p class="hint">Bienvenue sur ton panel d'administration Oakwood. Les sections Mods, Launcher, Actualités et Config arrivent ensuite.</p>
+        </section>
+
+        <section class="panel-section hidden" data-section="mods">
+          <h1>Mods</h1>
+          <div class="dropzone" id="mods-dropzone">
+            <input type="file" id="mods-input" multiple accept=".jar" hidden />
+            <span class="dropzone-icon">⬆</span>
+            <span class="dropzone-text">Glisse tes <strong>.jar</strong> ici, ou clique pour choisir</span>
+          </div>
+          <div class="upload-status" id="mods-upload-status"></div>
+          <div class="mods-toolbar">
+            <input type="search" id="mods-search" class="search-input" placeholder="Rechercher un mod..." />
+            <span class="mods-count" id="mods-count"></span>
+          </div>
+          <div class="mods-list" id="mods-list"></div>
+        </section>
+
+        <section class="panel-section hidden" data-section="releases"><h1>Launcher</h1><p class="hint">Publication des versions du launcher — à construire.</p></section>
+        <section class="panel-section hidden" data-section="news"><h1>Actualités</h1><p class="hint">Annonces & changelog — à construire.</p></section>
+        <section class="panel-section hidden" data-section="config"><h1>Config</h1><p class="hint">Versions MC / NeoForge, RAM conseillée — à construire.</p></section>
+      </main>
+    </section>
+
+    <script src="panel.js"></script>
+  </body>
+</html>

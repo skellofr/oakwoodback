@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Oakwood ATM10 - Admin Tool</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <img class="logo" src="assets/logo.png" alt="Oakwood ATM10" />
+      <button id="pick-folder-btn">Choisir le dossier mods</button>
+      <div id="folder-path" class="folder-path">Aucun dossier sélectionné</div>
+      <button id="sync-btn" disabled>Synchroniser avec le serveur</button>
+      <div class="status" id="status"></div>
+
+      <hr class="divider" />
+
+      <div class="announcement-form">
+        <input id="announcement-title" type="text" placeholder="Titre de l'annonce" />
+        <textarea id="announcement-body" placeholder="Contenu de l'annonce"></textarea>
+        <button id="announcement-btn">Publier l'annonce</button>
+        <div class="status" id="announcement-status"></div>
+      </div>
+    </div>
+    <script src="renderer.js"></script>
+  </body>
+</html>

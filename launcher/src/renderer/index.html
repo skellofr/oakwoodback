@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Oakwood ATM10 Launcher</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="bg-container" id="bg-container">
+      <div class="bg-layer" id="bg-layer-1"></div>
+      <div class="bg-layer" id="bg-layer-2"></div>
+    </div>
+
+    <div class="topbar">
+      <div class="brand">
+        <img class="brand-logo" src="assets/logo.png" alt="Oakwood ATM10" />
+        <div class="brand-text">
+          <span class="brand-name">OAKWOOD</span>
+          <span class="brand-sub">ATM10</span>
+        </div>
+      </div>
+
+      <div class="server-status" id="server-status">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">Connexion...</span>
+      </div>
+
+      <div class="topbar-right">
+        <div class="profile">
+          <div id="profile-logged-out">
+            <button id="login-btn">
+              <span class="ms-logo"></span>
+              Se connecter
+            </button>
+          </div>
+          <div id="profile-logged-in" class="hidden">
+            <img class="profile-avatar" id="profile-avatar" alt="" />
+            <span id="profile-username-display"></span>
+            <button class="icon-btn" id="logout-btn" title="Déconnexion">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button class="icon-btn" id="settings-btn" title="Réglages">⚙</button>
+      </div>
+    </div>
+
+    <div class="stage">
+      <section class="news-panel">
+        <h3>Actualités</h3>
+        <div class="news-list" id="news-list"></div>
+      </section>
+
+      <aside class="player-card">
+        <div class="player-skin-wrap">
+          <img class="player-skin hidden" id="player-skin" alt="" />
+          <div class="player-skin-placeholder" id="player-skin-placeholder">
+            <span>Non connecté</span>
+          </div>
+        </div>
+        <div class="player-name" id="player-card-name">Invité</div>
+        <div class="player-tag" id="player-card-tag">Connecte-toi pour jouer</div>
+      </aside>
+    </div>
+
+    <div class="playbar">
+      <div class="playbar-info">
+        <div class="playbar-status" id="status">Prêt.</div>
+        <div class="progress-track hidden" id="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="footer" id="app-info"></div>
+      </div>
+      <button class="play-btn" id="play-btn">
+        <span class="play-icon">▶</span>
+        Jouer
+      </button>
+    </div>
+
+    <div class="modal-overlay hidden" id="login-overlay">
+      <div class="modal">
+        <h3>Connexion Microsoft</h3>
+        <p class="login-instructions">
+          Un onglet vient de s'ouvrir dans ton navigateur (<strong>microsoft.com/link</strong>). S'il ne s'est pas
+          ouvert, vas-y manuellement et entre ce code :
+        </p>
+        <div class="device-code" id="device-code">------</div>
+        <div class="status" id="login-status">En attente de connexion...</div>
+        <div class="modal-actions">
+          <button id="login-cancel-btn" class="secondary-btn">Fermer</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="settings-overlay">
+      <div class="modal">
+        <h3>Réglages</h3>
+
+        <label class="field-label">
+          Mémoire allouée : <span id="ram-value">0</span> Mo
+        </label>
+        <input type="range" id="ram-slider" min="2048" step="512" />
+
+        <label class="field-label">Résolution du jeu</label>
+        <div class="resolution-row">
+          <input type="number" id="res-width" min="640" step="10" />
+          <span>×</span>
+          <input type="number" id="res-height" min="480" step="10" />
+        </div>
+
+        <label class="field-label">Arguments JVM avancés (optionnel)</label>
+        <input type="text" id="jvm-args" placeholder="-XX:+UseG1GC ..." />
+
+        <div class="modal-actions">
+          <button id="settings-cancel-btn" class="secondary-btn">Annuler</button>
+          <button id="settings-save-btn">Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>

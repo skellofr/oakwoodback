@@ -1,0 +1,45 @@
+{
+  "name": "@oakwood/launcher",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --publish never",
+    "publish": "electron-builder --win --publish always"
+  },
+  "build": {
+    "appId": "com.oakwood.atm10.launcher",
+    "productName": "Oakwood ATM10 Launcher",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://CHANGE-ME-VPS-URL/updates/"
+      }
+    ]
+  },
+  "dependencies": {
+    "@oakwood/shared": "*",
+    "adm-zip": "^0.6.0",
+    "electron-updater": "^6.8.9"
+  },
+  "devDependencies": {
+    "electron": "^44.2.0",
+    "electron-builder": "^26.15.3"
+  }
+}
