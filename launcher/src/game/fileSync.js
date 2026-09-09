@@ -2,10 +2,18 @@ const fs = require("fs");
 const path = require("path");
 const { hashFile } = require("@oakwood/shared");
 const { downloadFile } = require("./download");
+const { SERVER_BASE_URL } = require("../config");
 
 const CONCURRENCY = 8; // simultaneous downloads
 const MAX_ATTEMPTS = 3;
 const CACHE_FILE = ".oakwood-hashcache.json";
+
+// Builds the download URL from the configured server, so it stays valid even if
+// the server address (IP → domain) changed since the manifest was generated.
+function fileUrl(file) {
+  const encoded = file.path.split("/").map(encodeURIComponent).join("/");
+  return `${SERVER_BASE_URL}/files/${encoded}`;
+}
 
 async function downloadWithRetry(url, dest) {
   let lastErr;
@@ -90,7 +98,7 @@ async function syncInstanceFiles(instanceDir, manifest, onProgress, options = {}
       }
 
       if (needsDownload) {
-        await downloadWithRetry(file.url, dest);
+        await downloadWithRetry(fileUrl(file), dest);
         const st = fs.statSync(dest);
         cache[relPath] = { size: st.size, mtimeMs: st.mtimeMs, hash: file.hash || null };
         downloadedBytes += file.size || 0;

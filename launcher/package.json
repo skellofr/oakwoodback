@@ -33,7 +33,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://51.75.195.159:8090/updates/"
+        "url": "https://oakwoodrp.fr/updates/"
       }
     ]
   },
