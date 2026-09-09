@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Oakwood ATM10 — Télécharger le launcher</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; }
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: radial-gradient(circle at 50% 0%, #2a1f45 0%, #14121a 60%);
+        color: #eee;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+      .card {
+        background: rgba(30, 28, 38, 0.7);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 22px;
+        padding: 48px 44px;
+        max-width: 460px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+      }
+      .logo { width: 96px; height: 96px; object-fit: contain; margin-bottom: 18px; filter: drop-shadow(0 6px 18px rgba(0,0,0,.5)); }
+      .title { font-size: 26px; font-weight: 800; letter-spacing: 0.06em; }
+      .subtitle { color: #a855f7; font-weight: 700; letter-spacing: 0.28em; font-size: 12px; margin-top: 6px; }
+      .desc { color: #9a92ad; font-size: 14px; line-height: 1.6; margin: 20px 0 26px; }
+      .download-btn {
+        display: inline-flex; align-items: center; gap: 12px;
+        background: linear-gradient(135deg, #9333ea, #7c3aed);
+        color: #fff; text-decoration: none; font-size: 17px; font-weight: 700;
+        padding: 16px 34px; border-radius: 14px;
+        box-shadow: 0 10px 30px rgba(124, 58, 237, 0.45);
+        transition: transform .1s ease, filter .15s ease;
+      }
+      .download-btn:hover { filter: brightness(1.08); }
+      .download-btn:active { transform: scale(0.97); }
+      .download-btn.disabled { pointer-events: none; opacity: 0.5; }
+      .win-icon { width: 20px; height: 20px; background: currentColor;
+        mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 5.5 10.5 4.5v7H3zM10.5 12.5v7L3 18.5v-6zM11.5 4.3 21 3v8.5h-9.5zM21 12.5V21l-9.5-1.3v-7.2z'/%3E%3C/svg%3E") center/contain no-repeat; }
+      .version { margin-top: 18px; font-size: 13px; color: #7d7690; }
+      .note { margin-top: 22px; font-size: 12px; color: #7d7690; line-height: 1.6; }
+      .note b { color: #a855f7; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="logo" src="/logo.png" alt="Oakwood ATM10" />
+      <div class="title">OAKWOOD</div>
+      <div class="subtitle">ATM10 LAUNCHER</div>
+      <p class="desc">
+        Télécharge le launcher officiel pour rejoindre le serveur. Il installe Minecraft, NeoForge et tous les mods
+        automatiquement — tu n'as plus qu'à cliquer sur Jouer.
+      </p>
+      <a class="download-btn" id="download-btn" href="/download/latest">
+        <span class="win-icon"></span>
+        Télécharger pour Windows
+      </a>
+      <div class="version" id="version">Recherche de la dernière version...</div>
+      <p class="note">
+        🔄 <b>Mises à jour automatiques</b> : une fois installé, le launcher se met à jour tout seul à chaque démarrage.
+      </p>
+    </div>
+
+    <script>
+      fetch("/api/latest-launcher")
+        .then((r) => r.json())
+        .then((d) => {
+          const btn = document.getElementById("download-btn");
+          const ver = document.getElementById("version");
+          if (d.available) {
+            ver.textContent = "Version " + (d.version || "?") + " · Windows 64-bit";
+          } else {
+            ver.textContent = "Aucune version publiée pour le moment.";
+            btn.classList.add("disabled");
+          }
+        })
+        .catch(() => {
+          document.getElementById("version").textContent = "Impossible de contacter le serveur.";
+        });
+    </script>
+  </body>
+</html>

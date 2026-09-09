@@ -52,6 +52,28 @@ app.use(
 );
 app.use("/updates", express.static(path.join(DATA_DIR, "updates")));
 
+// Public launcher download info + permanent "latest" download link.
+function latestLauncher() {
+  const ymlPath = path.join(DATA_DIR, "updates", "latest.yml");
+  if (!fs.existsSync(ymlPath)) return null;
+  const content = fs.readFileSync(ymlPath, "utf8");
+  const version = (content.match(/^version:\s*(.+)$/m) || [])[1]?.trim();
+  const file = (content.match(/^path:\s*(.+)$/m) || [])[1]?.trim();
+  return file ? { version, file } : null;
+}
+
+app.get("/api/latest-launcher", (req, res) => {
+  const info = latestLauncher();
+  if (!info) return res.json({ available: false });
+  res.json({ available: true, version: info.version, file: info.file, url: `/updates/${encodeURIComponent(info.file)}` });
+});
+
+app.get("/download/latest", (req, res) => {
+  const info = latestLauncher();
+  if (!info) return res.status(404).send("Aucune version publiée pour le moment.");
+  res.redirect(`/updates/${encodeURIComponent(info.file)}`);
+});
+
 // Admin API + web panel.
 app.use("/api/auth", authRouter);
 app.use("/api/mods", modsRouter);
@@ -61,7 +83,10 @@ app.use("/api/config", configRouter);
 app.use("/api/stats", statsRouter);
 app.use("/admin", adminRouter);
 app.use("/panel", express.static(path.join(__dirname, "panel")));
-app.get("/", (req, res) => res.redirect("/panel"));
+
+// Public download page at / and /download.
+app.get("/download", (req, res) => res.sendFile(path.join(__dirname, "public", "index.html")));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.listen(PORT, () => {
   console.log(`Oakwood ATM10 server listening on port ${PORT}`);
