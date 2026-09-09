@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, Menu } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -176,6 +176,7 @@ ipcMain.handle("verify-repair", async (event) => {
 });
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   ensureAppDirs();
   createWindow();
   setupAutoUpdate();
