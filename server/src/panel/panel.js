@@ -38,6 +38,9 @@ function showDashboard(admin) {
   loadOverview();
   setupMods();
   setupReleases();
+  setupNews();
+  setupConfig();
+  setupStats();
 }
 
 function wireNav() {
@@ -282,6 +285,148 @@ async function deleteRelease(name) {
   });
   const data = await res.json();
   if (res.ok) renderReleases(data);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+// --- News ---
+function setupNews() {
+  document.getElementById("news-publish").addEventListener("click", async () => {
+    const title = document.getElementById("news-title").value.trim();
+    const body = document.getElementById("news-body").value.trim();
+    const status = document.getElementById("news-status");
+    if (!title || !body) {
+      status.textContent = "Titre et contenu requis.";
+      return;
+    }
+    const res = await fetch("/api/news", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify({ title, body }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      status.textContent = "✅ Publié";
+      document.getElementById("news-title").value = "";
+      document.getElementById("news-body").value = "";
+      renderNews(data.announcements);
+    } else {
+      status.textContent = "Erreur : " + data.error;
+    }
+  });
+  loadNews();
+}
+
+async function loadNews() {
+  try {
+    const data = await (await fetch("/api/news", { credentials: "same-origin" })).json();
+    renderNews(data.announcements);
+  } catch {
+    // ignore
+  }
+}
+
+function renderNews(list) {
+  const el = document.getElementById("news-list");
+  if (!list || list.length === 0) {
+    el.innerHTML = `<div class="mods-empty">Aucune annonce.</div>`;
+    return;
+  }
+  el.innerHTML = "";
+  for (const a of list) {
+    const date = new Date(a.timestamp).toLocaleString("fr-FR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const row = document.createElement("div");
+    row.className = "mod-row";
+    row.innerHTML = `
+      <div class="news-item-col">
+        <div class="news-item-title">${escapeHtml(a.title)}</div>
+        <div class="news-item-body">${escapeHtml(a.body)}</div>
+      </div>
+      <span class="mod-size">${date}</span>
+      <button class="mod-delete">Supprimer</button>`;
+    row.querySelector(".mod-delete").addEventListener("click", () => deleteNews(a.id));
+    el.appendChild(row);
+  }
+}
+
+async function deleteNews(id) {
+  if (!confirm("Supprimer cette annonce ?")) return;
+  const res = await fetch("/api/news/delete", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ id }),
+  });
+  const data = await res.json();
+  if (res.ok) renderNews(data.announcements);
+}
+
+// --- Config ---
+function setupConfig() {
+  loadConfig();
+  document.getElementById("cfg-save").addEventListener("click", async () => {
+    const status = document.getElementById("cfg-status");
+    const payload = {
+      modpackName: document.getElementById("cfg-name").value.trim(),
+      minecraftVersion: document.getElementById("cfg-mc").value.trim(),
+      neoforgeVersion: document.getElementById("cfg-neo").value.trim(),
+      recommendedRamMb: Number(document.getElementById("cfg-ram").value),
+    };
+    const res = await fetch("/api/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    status.textContent = res.ok ? "✅ Enregistré" : "Erreur";
+    if (res.ok) fillConfig(data);
+  });
+}
+
+async function loadConfig() {
+  try {
+    const data = await (await fetch("/api/config", { credentials: "same-origin" })).json();
+    fillConfig(data);
+  } catch {
+    // ignore
+  }
+}
+
+function fillConfig(c) {
+  document.getElementById("cfg-name").value = c.modpackName || "";
+  document.getElementById("cfg-mc").value = c.minecraftVersion || "";
+  document.getElementById("cfg-neo").value = c.neoforgeVersion || "";
+  document.getElementById("cfg-ram").value = c.recommendedRamMb || "";
+}
+
+// --- Stats ---
+function setupStats() {
+  document.getElementById("stats-refresh").addEventListener("click", loadStats);
+  loadStats();
+}
+
+async function loadStats() {
+  try {
+    const s = await (await fetch("/api/stats", { credentials: "same-origin" })).json();
+    document.getElementById("st-mods").textContent = s.mods;
+    document.getElementById("st-size").textContent = formatSize(s.totalBytes);
+    document.getElementById("st-version").textContent = s.modpackVersion;
+    document.getElementById("st-sync").textContent = s.manifestRequests;
+    document.getElementById("st-dl").textContent = s.fileDownloads;
+    document.getElementById("st-admins").textContent = s.admins;
+  } catch {
+    // ignore
+  }
 }
 
 init();

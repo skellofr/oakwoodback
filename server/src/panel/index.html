@@ -36,6 +36,7 @@
           <button class="nav-item" data-section="releases">Launcher</button>
           <button class="nav-item" data-section="news">Actualités</button>
           <button class="nav-item" data-section="config">Config</button>
+          <button class="nav-item" data-section="stats">Stats</button>
         </nav>
         <div class="admin-box">
           <img id="admin-avatar" class="admin-avatar" alt="" />
@@ -87,8 +88,50 @@
           </p>
         </section>
 
-        <section class="panel-section hidden" data-section="news"><h1>Actualités</h1><p class="hint">Annonces & changelog — à construire.</p></section>
-        <section class="panel-section hidden" data-section="config"><h1>Config</h1><p class="hint">Versions MC / NeoForge, RAM conseillée — à construire.</p></section>
+        <section class="panel-section hidden" data-section="news">
+          <h1>Actualités</h1>
+          <div class="form-card">
+            <input type="text" id="news-title" class="field" placeholder="Titre de l'annonce" />
+            <textarea id="news-body" class="field" rows="4" placeholder="Contenu de l'annonce..."></textarea>
+            <div class="form-actions">
+              <span class="upload-status" id="news-status"></span>
+              <button id="news-publish" class="primary-btn">Publier</button>
+            </div>
+          </div>
+          <div class="mods-list" id="news-list"></div>
+        </section>
+
+        <section class="panel-section hidden" data-section="config">
+          <h1>Config</h1>
+          <div class="form-card">
+            <label class="field-label">Nom du modpack</label>
+            <input type="text" id="cfg-name" class="field" />
+            <label class="field-label">Version Minecraft</label>
+            <input type="text" id="cfg-mc" class="field" />
+            <label class="field-label">Version NeoForge</label>
+            <input type="text" id="cfg-neo" class="field" />
+            <label class="field-label">RAM conseillée (Mo)</label>
+            <input type="number" id="cfg-ram" class="field" min="2048" step="512" />
+            <div class="form-actions">
+              <span class="upload-status" id="cfg-status"></span>
+              <button id="cfg-save" class="primary-btn">Enregistrer</button>
+            </div>
+          </div>
+          <p class="hint">⚠️ Changer les versions MC / NeoForge nécessite d'adapter les mods en conséquence.</p>
+        </section>
+
+        <section class="panel-section hidden" data-section="stats">
+          <h1>Statistiques</h1>
+          <div class="cards">
+            <div class="stat-card"><span class="stat-label">Mods</span><span class="stat-value" id="st-mods">—</span></div>
+            <div class="stat-card"><span class="stat-label">Taille du pack</span><span class="stat-value" id="st-size">—</span></div>
+            <div class="stat-card"><span class="stat-label">Version modpack</span><span class="stat-value" id="st-version">—</span></div>
+            <div class="stat-card"><span class="stat-label">Synchros launcher</span><span class="stat-value" id="st-sync">—</span></div>
+            <div class="stat-card"><span class="stat-label">Fichiers téléchargés</span><span class="stat-value" id="st-dl">—</span></div>
+            <div class="stat-card"><span class="stat-label">Admins</span><span class="stat-value" id="st-admins">—</span></div>
+          </div>
+          <button id="stats-refresh" class="secondary-btn">Rafraîchir</button>
+        </section>
       </main>
     </section>
 

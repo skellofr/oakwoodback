@@ -30,6 +30,15 @@ function appendAnnouncement(entry) {
   writeJsonArray(ANNOUNCEMENTS_PATH, entries.slice(0, MAX_ENTRIES));
 }
 
+function removeAnnouncement(id) {
+  const entries = readJsonArray(ANNOUNCEMENTS_PATH).filter((a) => a.id !== id);
+  writeJsonArray(ANNOUNCEMENTS_PATH, entries);
+}
+
+function listAnnouncements() {
+  return readJsonArray(ANNOUNCEMENTS_PATH);
+}
+
 function getFeed() {
   return {
     announcements: readJsonArray(ANNOUNCEMENTS_PATH),
@@ -37,4 +46,4 @@ function getFeed() {
   };
 }
 
-module.exports = { appendChangelogEntry, appendAnnouncement, getFeed };
+module.exports = { appendChangelogEntry, appendAnnouncement, removeAnnouncement, listAnnouncements, getFeed };
