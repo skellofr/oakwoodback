@@ -10,7 +10,7 @@ function systemMaxRamMb() {
 function defaultSettings() {
   const maxRamMb = systemMaxRamMb();
   return {
-    ramMb: Math.min(4096, maxRamMb),
+    ramMb: Math.min(6144, maxRamMb),
     maxRamMb,
     resolutionWidth: 1280,
     resolutionHeight: 720,

@@ -5,6 +5,30 @@ const { rulesAllow, mavenToPath, collectArguments, OS_NAME } = require("./versio
 
 const CP_SEP = OS_NAME === "windows" ? ";" : ":";
 
+// Aikar's flags: tuned G1GC settings that greatly reduce lag/stutter in modded MC.
+const AIKAR_FLAGS = [
+  "-XX:+UseG1GC",
+  "-XX:+ParallelRefProcEnabled",
+  "-XX:MaxGCPauseMillis=200",
+  "-XX:+UnlockExperimentalVMOptions",
+  "-XX:+DisableExplicitGC",
+  "-XX:+AlwaysPreTouch",
+  "-XX:G1NewSizePercent=30",
+  "-XX:G1MaxNewSizePercent=40",
+  "-XX:G1HeapRegionSize=8M",
+  "-XX:G1ReservePercent=20",
+  "-XX:G1HeapWastePercent=5",
+  "-XX:G1MixedGCCountTarget=4",
+  "-XX:InitiatingHeapOccupancyPercent=15",
+  "-XX:G1MixedGCLiveThresholdPercent=90",
+  "-XX:G1RSetUpdatingPauseTimePercent=5",
+  "-XX:SurvivorRatio=32",
+  "-XX:+PerfDisableSharedMem",
+  "-XX:MaxTenuringThreshold=1",
+  "-Dusing.aikars.flags=https://mcflags.emc.gs",
+  "-Daikars.new.flags=true",
+];
+
 // Builds the launch command from the vanilla + NeoForge version jsons and starts the game.
 function launchGame({ mcVersion, vanillaJsonPath, neoJsonPath, javaPath, session, ramMb, jvmArgs, paths }) {
   const vanilla = JSON.parse(fs.readFileSync(vanillaJsonPath, "utf8"));
@@ -35,7 +59,8 @@ function launchGame({ mcVersion, vanillaJsonPath, neoJsonPath, javaPath, session
     classpath_separator: CP_SEP,
   };
 
-  const args = [`-Xmx${ramMb}M`, `-Xms${Math.min(ramMb, 1024)}M`, `-Djava.library.path=${paths.nativesDir}`];
+  // Aikar recommends Xms = Xmx so the JVM grabs all memory up front.
+  const args = [`-Xmx${ramMb}M`, `-Xms${ramMb}M`, ...AIKAR_FLAGS, `-Djava.library.path=${paths.nativesDir}`];
   const extra = (jvmArgs || "").trim();
   if (extra) args.push(...extra.split(/\s+/));
 

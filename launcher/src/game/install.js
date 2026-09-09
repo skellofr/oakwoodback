@@ -45,7 +45,7 @@ async function verifyAndRepair({ appDataDir, instanceDir, manifest }, onProgress
   const paths = createGamePaths(appDataDir, instanceDir);
   ensureGameDirs(paths);
   const mc = manifest && Array.isArray(manifest.files) ? manifest : { files: [] };
-  await syncInstanceFiles(instanceDir, mc, onProgress);
+  await syncInstanceFiles(instanceDir, mc, onProgress, { forceVerify: true });
 }
 
 module.exports = { prepareAndLaunch, verifyAndRepair };
