@@ -123,6 +123,18 @@ ipcMain.handle("play", async (event) => {
       // offline: continue with no extra files
     }
 
+    // Versions come from the admin panel (/config.json), falling back to constants.
+    let versions = null;
+    try {
+      const res = await fetch(`${SERVER_BASE_URL}/config.json`);
+      if (res.ok) {
+        const cfg = await res.json();
+        versions = { minecraftVersion: cfg.minecraftVersion, neoforgeVersion: cfg.neoforgeVersion };
+      }
+    } catch {
+      // offline: fall back to built-in versions
+    }
+
     const session = {
       username: auth.profile.username,
       uuid: auth.profile.uuid,
@@ -131,7 +143,7 @@ ipcMain.handle("play", async (event) => {
     };
 
     await prepareAndLaunch(
-      { appDataDir: APP_DATA_DIR, instanceDir: INSTANCE_DIR, session, settings, manifest },
+      { appDataDir: APP_DATA_DIR, instanceDir: INSTANCE_DIR, session, settings, manifest, versions },
       report
     );
     return { ok: true };
