@@ -36,4 +36,13 @@ async function prepareAndLaunch({ appDataDir, instanceDir, session, settings, ma
   });
 }
 
-module.exports = { prepareAndLaunch };
+// Re-verifies every instance file against the manifest and re-downloads any that
+// are missing or corrupted (hash mismatch). Does not touch Java/MC/NeoForge.
+async function verifyAndRepair({ appDataDir, instanceDir, manifest }, onProgress) {
+  const paths = createGamePaths(appDataDir, instanceDir);
+  ensureGameDirs(paths);
+  const mc = manifest && Array.isArray(manifest.files) ? manifest : { files: [] };
+  await syncInstanceFiles(instanceDir, mc, onProgress);
+}
+
+module.exports = { prepareAndLaunch, verifyAndRepair };

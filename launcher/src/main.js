@@ -8,7 +8,7 @@ const { loadSettings, saveSettings } = require("./settingsStore");
 const { loadProfile, saveProfile, clearProfile } = require("./profileStore");
 const { saveRefreshToken, loadRefreshToken, clearRefreshToken } = require("./authStore");
 const { loginWithDeviceCode, loginWithRefreshToken } = require("./auth/authFlow");
-const { prepareAndLaunch } = require("./game/install");
+const { prepareAndLaunch, verifyAndRepair } = require("./game/install");
 const { autoUpdater } = require("electron-updater");
 const { SERVER_BASE_URL } = require("./config");
 
@@ -134,6 +134,27 @@ ipcMain.handle("play", async (event) => {
       { appDataDir: APP_DATA_DIR, instanceDir: INSTANCE_DIR, session, settings, manifest },
       report
     );
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err.message };
+  } finally {
+    launching = false;
+  }
+});
+
+ipcMain.handle("verify-repair", async (event) => {
+  if (launching) return { ok: false, error: "Opération déjà en cours." };
+  launching = true;
+  const report = (status, percent) => event.sender.send("game:progress", { status, percent });
+  try {
+    let manifest = { files: [] };
+    try {
+      const res = await fetch(`${SERVER_BASE_URL}/manifest.json`);
+      if (res.ok) manifest = await res.json();
+    } catch {
+      // offline: nothing to repair against
+    }
+    await verifyAndRepair({ appDataDir: APP_DATA_DIR, instanceDir: INSTANCE_DIR, manifest }, report);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: err.message };

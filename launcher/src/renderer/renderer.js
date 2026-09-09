@@ -43,6 +43,32 @@ playBtn.addEventListener("click", async () => {
   playBtn.disabled = false;
 });
 
+const repairBtn = document.getElementById("repair-btn");
+repairBtn.addEventListener("click", async () => {
+  repairBtn.disabled = true;
+  playBtn.disabled = true;
+  statusEl.textContent = "Vérification des fichiers...";
+  progressTrack.classList.remove("hidden");
+  progressFill.style.width = "0%";
+
+  const result = await window.oakwood.verifyRepair();
+
+  if (result.ok) {
+    statusEl.textContent = "Fichiers vérifiés et réparés ✅";
+    progressFill.style.width = "100%";
+    setTimeout(() => {
+      statusEl.textContent = "Prêt.";
+      progressTrack.classList.add("hidden");
+      progressFill.style.width = "0%";
+    }, 4000);
+  } else {
+    statusEl.textContent = `Erreur : ${result.error}`;
+    progressTrack.classList.add("hidden");
+  }
+  repairBtn.disabled = false;
+  playBtn.disabled = false;
+});
+
 // --- Parallax + slideshow background ---
 const bgContainer = document.getElementById("bg-container");
 const bgLayers = [document.getElementById("bg-layer-1"), document.getElementById("bg-layer-2")];

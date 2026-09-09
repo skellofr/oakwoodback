@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("oakwood", {
   onDeviceCode: (callback) => ipcRenderer.on("auth:device-code", (event, data) => callback(data)),
 
   play: () => ipcRenderer.invoke("play"),
+  verifyRepair: () => ipcRenderer.invoke("verify-repair"),
   onGameProgress: (callback) => ipcRenderer.on("game:progress", (event, data) => callback(data)),
   onUpdateStatus: (callback) => ipcRenderer.on("update:status", (event, text) => callback(text)),
 });
